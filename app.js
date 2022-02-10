@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 const port = 3001
 
+app.use(express.json())
+
 const persons = [
     { 
       "id": 1,
@@ -47,7 +49,22 @@ app.get('/api/persons/:id', (req, res)=>{
 app.delete('/api/persons/:id', (req, res)=>{
   const id = Number(req.params.id)
   persons = persons.filter(person=> person.id !== id)
-  res.sendStatus(204)
+  res.status(204).end()
+})
+
+app.post('/api/persons', (req, res)=>{
+  let body = req.body
+  const name = body.name
+  const important = body.important || false
+  const id = Math.floor((Math.random()*9999999999999999) + 1)
+  const person = {
+    id,
+    name,
+    important,
+  }
+  const people = persons.concat(person)
+  
+  res.json(people)
 })
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
