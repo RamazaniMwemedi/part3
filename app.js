@@ -56,15 +56,30 @@ app.post('/api/persons', (req, res)=>{
   let body = req.body
   const name = body.name
   const important = body.important || false
-  const id = Math.floor((Math.random()*9999999999999999) + 1)
-  const person = {
-    id,
-    name,
-    important,
-  }
-  const people = persons.concat(person)
+  const id = Math.floor((Math.random()* 9^9999) + 1)
+
+  const names = persons.map(person => person.name )
+  const x = names.filter(useName => useName)
   
-  res.json(people)
+  if (x == name.toUpperCase()) {
+    console.log(`This name:${name}, is found `);
+    res.sendStatus(406)
+  } else{
+    // const person={
+    //   id,
+    //   name,
+    //   important
+    // }
+    // const people = persons.concat(person)
+    // res.json(people)
+    console.log(`${name} is not found`);
+    res.sendStatus(200)
+  }
+
+ 
+
+  
+
 })
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
