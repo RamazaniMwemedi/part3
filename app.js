@@ -1,8 +1,20 @@
 const express = require('express')
+const morgan = require('morgan')
+
 const app = express()
 const port = 3001
 
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
+
 app.use(express.json())
+// app.use(requestLogger)
+app.use(morgan('tiny'))
 
 const persons = [
     { 
@@ -63,23 +75,18 @@ app.post('/api/persons', (req, res)=>{
   
   if (x == name.toUpperCase()) {
     console.log(`This name:${name}, is found `);
-    res.sendStatus(406)
+    res.status(406).send('Something')
   } else{
-    // const person={
-    //   id,
-    //   name,
-    //   important
-    // }
-    // const people = persons.concat(person)
-    // res.json(people)
     console.log(`${name} is not found`);
-    res.sendStatus(200)
+    res.status(200).send('also something')
   }
-
- 
-
-  
-
 })
+
+const unknownEndpoint = (request, response, next) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+  next()
+}
+
+app.use(unknownEndpoint)
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
