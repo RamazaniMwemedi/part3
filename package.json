@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
-    "dev": "nodemon app.js ",
+    "start": "node mongo.js ",
+    "dev": "nodemon mongo.js claudine0406@",
     "build:ui": "rm -rf build && cd ../part02/parts/ && npm run build && xcopy -r build ../../backend",
     "deploy": "git push heroku main",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push && npm run deploy",

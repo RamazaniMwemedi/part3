@@ -1,9 +1,5 @@
 const express = require('express')
 const cors = require('cors')
-const mongoose = require('mongoose')
-
-const app = express()
-const port = process.env.PORT || 3001
 
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
@@ -12,10 +8,6 @@ const requestLogger = (request, response, next) => {
   console.log('---')
   next()
 }
-
-app.use(express.json())
-app.use(express.static('build'))
-app.use(cors())
 
 const persons = [
     { 
@@ -40,31 +32,29 @@ const persons = [
     }
 ]
 
-const uri = `mongodb+srv://RamazaniMwemedi:claudine0406@cluster0.t3hxb.mongodb.net/noteApp?retryWrites=true&w=majority`
+app.use(express.json())
+app.use(express.static('build'))
+app.use(cors())
 
-mongoose.connect(uri)
 
-const noteSchema = new mongoose.Schema({
-  content: String,
-  date: Date,
-  important: Boolean,
-})
 
-const Note = new mongoose.model('Note', noteSchema)
+const theNote = []
 
-const note = new Note({
-  content: 'HTML is Easy',
-  date: new Date(),
-  important: true,
-})
-
-note.save().then(result => {
-  console.log('note saved!')
+Note.find({}).then(result => {
+  result.forEach(note => {
+    // console.log(note)
+    theNote.push(note)
+    console.log(theNote);
+  })
   mongoose.connection.close()
 })
 
 app.get('/api/persons', (req, res) => {
   res.json(persons)
+})
+
+app.get('/notes', (req, res)=>{
+  res.send(`<h1>Notes in DB</h1></br>`)
 })
 
 app.get('/info', (req, res)=>{
