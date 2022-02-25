@@ -1,5 +1,6 @@
 const express = require('express')
 const cors = require('cors')
+const mongoose = require('mongoose')
 
 const app = express()
 const port = process.env.PORT || 3001
@@ -38,6 +39,29 @@ const persons = [
       "number": "39-23-6423122"
     }
 ]
+
+const uri = `mongodb+srv://RamazaniMwemedi:claudine0406@cluster0.t3hxb.mongodb.net/noteApp?retryWrites=true&w=majority`
+
+mongoose.connect(uri)
+
+const noteSchema = new mongoose.Schema({
+  content: String,
+  date: Date,
+  important: Boolean,
+})
+
+const Note = new mongoose.model('Note', noteSchema)
+
+const note = new Note({
+  content: 'HTML is Easy',
+  date: new Date(),
+  important: true,
+})
+
+note.save().then(result => {
+  console.log('note saved!')
+  mongoose.connection.close()
+})
 
 app.get('/api/persons', (req, res) => {
   res.json(persons)
