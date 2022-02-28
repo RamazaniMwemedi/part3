@@ -69,7 +69,7 @@ app.get('/info', (req, res)=>{
 const unknownEndpoint = (request, response, next) => {
   response.status(404).send(`<h2>Hello😎</h2> <p>You are lost here, there is no such kindd of thing here dude 😁😁😁</p>`)
   next()
-  console.log("The unknown end point", request);
+  console.log("The unknown end point");
 }
 
 app.use(unknownEndpoint)
