@@ -3,6 +3,7 @@ const express = require('express')
 const cors = require('cors')
 const mongoose = require('mongoose')
 const Note = require('./models/note')
+const morgan = require('morgan')
 // console.log(Note);
 const app = express()
 const port = process.env.PORT
@@ -17,46 +18,21 @@ const requestLogger = (request, response, next) => {
   console.log('---')
   next()
 }
+app.use(morgan('dev'))
 
 app.use(express.json())
 app.use(express.static('build'))
 app.use(cors())
 
-const note = new Note({
-  content: "Ramazani",
-  date: new Date,
-  import: true
-})
-console.log("Started");
-// note.save().then(res=>{
-//   console.log("Data sent to the DataBase ");
-//   // mongoose.connection.close()
-// })
-
 console.log("Hello there", process.env.NAME);
 
-app.get('/', (req, res)=>{
-  app.use(express.static('build'))
-})
+// HTTP GET Requests
 
 app.get('/api/persons', (req, res) => {
-
-//   noteSchema.set('toJSON',{
-//   transform:(document, returnOdject)=>{
-//     returnOdject.id= returnOdject._id.toString()
-//     delete returnOdject.id
-//     delete returnOdject.__v
-//   }
-// })
-
   Note.find({}).then( note=>{
     res.json(note)
   })
   console.log("API asked");
-})
-
-app.get('/notes', (req, res)=>{
-  res.send(`<h1>Notes in DB</h1></br>`)
 })
 
 app.get('/info', (req, res)=>{
@@ -64,6 +40,26 @@ app.get('/info', (req, res)=>{
    res.send(`<h1>Phone book has info for ${note.length} people</h1> <i>${new Date()}</i>`)
   })
   console.log("Info point asked");
+})
+
+// HTTP POST Request
+
+app.post('/api/notes/:id', (req, res)=>{
+  const body = req.body;
+  if (body.content === undefined ) {
+    return res.status(400).json({Error: "Body is undefined"})
+    console.log(body);
+  }
+  const note = new Note({
+    content: body.content,
+    important: body.important,
+    date: new Date()
+  })
+
+  note.save().then(result=>{
+    res.json(result)
+    
+  })
 })
 
 const unknownEndpoint = (request, response, next) => {
