@@ -35,9 +35,9 @@ console.log("Started");
 
 console.log("Hello there", process.env.NAME);
 
-// app.get('/', (req, res)=>{
-//   res.send("Home page")
-// })
+app.get('/', (req, res)=>{
+  app.use(express.static('build'))
+})
 
 app.get('/api/persons', (req, res) => {
 
