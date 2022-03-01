@@ -28,11 +28,24 @@ console.log("Hello there", process.env.NAME);
 
 // HTTP GET Requests
 
+// GET all persons from the database
+
 app.get('/api/persons', (req, res) => {
   Note.find({}).then( note=>{
     res.json(note)
   })
   console.log("API asked");
+})
+
+// GET single person from the db byid
+
+app.get('/api/persons/:id', (req, res)=>{
+  const id = req.params.id;
+  
+  Note.findById(id).then(result=>{
+    res.json(result)
+    console.log(`${result.content} was been fetched`)
+  })
 })
 
 app.get('/info', (req, res)=>{
