@@ -42,10 +42,19 @@ app.get('/api/persons', (req, res) => {
 app.get('/api/persons/:id', (req, res)=>{
   const id = req.params.id;
   
-  Note.findById(id).then(result=>{
-    res.json(result)
-    console.log(`${result.content} was been fetched`)
-  })
+  Note.findById(id)
+    .then(result=>{
+      if(result){
+        res.json(result)
+      } else{
+        res.status(404).end()
+      }
+    }
+  )
+    .catch(error=>{
+      console.log(error);
+      res.status(500).end()
+    })
 })
 
 app.get('/info', (req, res)=>{
