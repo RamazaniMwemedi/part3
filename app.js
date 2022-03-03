@@ -100,4 +100,14 @@ const unknownEndpoint = (request, response, next) => {
 
 app.use(unknownEndpoint)
 
+const errorHandler = (error, req, res, next) => {
+  console.error(error.message)
+  if(error.name === 'CastError'){
+    return res.status(404).send({error: "Malformated id"})
+  }
+  next(error)
+}
+
+app.use(errorHandler)
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
