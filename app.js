@@ -31,10 +31,18 @@ console.log("Hello there", process.env.NAME);
 // GET all persons from the database
 
 app.get('/api/persons', (req, res) => {
-  Note.find({}).then( note=>{
-    res.json(note)
+
+  try {
+    Note.find({}).then( note=>{
+      const noteToSend = note.filter(n=> n.content != undefined)
+      console.log(noteToSend);
+      res.json(noteToSend)
   })
   console.log("API asked");
+} catch (error) {
+  console.error(error);
+}
+
 })
 
 // GET single person from the db byid
