@@ -74,22 +74,54 @@ app.get('/info', (req, res)=>{
 
 // HTTP POST Request
 
-app.post('/api/notes/:id', (req, res)=>{
+app.post('/api/notes/', (req, res)=>{
   const body = req.body;
   if (body.content === undefined ) {
     return res.status(400).json({Error: "Body is undefined"})
     console.log(body);
+  } else {
+    const note = new Note({
+      content: body.content,
+      important: body.important,
+      date: new Date()
+    })
+
+    note.save().then(result=>{
+      res.json(result)
+      
+    })
   }
-  const note = new Note({
-    content: body.content,
-    important: body.important,
-    date: new Date()
+})
+
+  // HTTP PUT Request
+
+  app.put('/api/notes/:id',(req, res, next)=>{
+    const id = req.params.id
+    const body = req.body
+
+    const note= {
+      content: body.content,
+      important: body.important
+    }
+    Note.findByIdAndUpdate(id,note)
+      .then(updatedNote=>{
+        res.json(updatedNote)
+      })
+      .catch(error=> next(error))
   })
 
-  note.save().then(result=>{
-    res.json(result)
-    
-  })
+
+// HTTP DELETE Request
+app.delete('/api/notes/:id',(req, res, next)=>{
+  Note.findByIdAndDelete(req.params.id)
+    .then(result=> res.status(204).end() )
+    .catch(error=> next(error))
+})
+
+app.delete('/api/note/:name',(req, res, next)=>{
+  Note.remove({content: req.params.name})
+    .then(result=> res.status(204))
+    .catch(error=> next(error))
 })
 
 const unknownEndpoint = (request, response, next) => {
