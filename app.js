@@ -1,15 +1,14 @@
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
-const mongoose = require('mongoose')
-const Note = require('./models/note')
 const morgan = require('morgan')
-// console.log(Note);
 const app = express()
 const port = process.env.PORT
-const password = process.argv[2]
-const name = process.argv[3]
-const number = process.argv[4]
+
+// Models
+
+const Note = require('./models/note')
+const Person = require('./models/person')
 
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
@@ -26,16 +25,15 @@ app.use(cors())
 
 console.log("Hello there", process.env.NAME);
 
+// NOTE MODEL IN USE
+
 // HTTP GET Requests
-
 // GET all persons from the database
-
-app.get('/api/persons', (req, res) => {
-
+app.get('/api/notes', (req, res) => {
   try {
     Note.find({}).then( note=>{
       const noteToSend = note.filter(n=> n.content != undefined)
-      console.log(noteToSend);
+      console.log("Datas are sent");
       res.json(noteToSend)
   })
   console.log("API asked");
@@ -46,10 +44,8 @@ app.get('/api/persons', (req, res) => {
 })
 
 // GET single person from the db byid
-
-app.get('/api/persons/:id', (req, res)=>{
+app.get('/api/notes/:id', (req, res)=>{
   const id = req.params.id;
-  
   Note.findById(id)
     .then(result=>{
       if(result){
@@ -64,16 +60,15 @@ app.get('/api/persons/:id', (req, res)=>{
       res.status(500).end()
     })
 })
-
-app.get('/info', (req, res)=>{
-  Note.find({}).then( note=>{
-   res.send(`<h1>Phone book has info for ${note.length} people</h1> <i>${new Date()}</i>`)
-  })
+// Get info on how many notes are in the Note collection
+app.get('/api/notes/info', (req, res)=>{
+  // Note.find({}).then( note=>{
+  //  res.send(`<h1>Phone book has info for ${note.length} people</h1> <i>${new Date()}</i>`)
+  // })
   console.log("Info point asked");
 })
 
 // HTTP POST Request
-
 app.post('/api/notes/', (req, res)=>{
   const body = req.body;
   if (body.content === undefined ) {
@@ -92,10 +87,8 @@ app.post('/api/notes/', (req, res)=>{
     })
   }
 })
-
   // HTTP PUT Request
-
-  app.put('/api/notes/:id',(req, res, next)=>{
+app.put('/api/notes/:id',(req, res, next)=>{
     const id = req.params.id
     const body = req.body
 
@@ -117,15 +110,72 @@ app.delete('/api/notes/:id',(req, res, next)=>{
     .then(result=> res.status(204).end() )
     .catch(error=> next(error))
 })
-
-app.delete('/api/note/:name',(req, res, next)=>{
+// Deleting all datas which match the name params
+app.delete('/del/notes/:name',(req, res, next)=>{
   Note.remove({content: req.params.name})
-    .then(result=> res.status(204))
+    .then(result=> res.status(204).json({messaage:`${req.params.name} has been deleted`}))
+    .catch(error=> next(error))
+})
+
+// PERSON MODEL
+
+// HTTP GET Method
+// GET all persons apis
+
+app.get('/api/persons',(req, res)=>{
+  Person.find({})
+    .then(person=>{
+      res.json(person).status(200)
+    })
+})
+// GET a single API
+app.get('/api/persons/:id', (req, res)=>{
+  Person.findById(req.params.id)
+    .then(person=>{
+      res.json(person).status(200)
+    })
+})
+
+// HTTP POST Method
+app.post('/api/persons',(req, res)=>{
+  const body = req.body
+  const person = new Person({
+    name: body.name,
+    number: body.number,
+    important: body.important,
+    date: new Date()
+
+  })
+  person.save()
+    .then(person=>{
+      res.json(person)
+    })
+
+})
+// HTTTP PUT method
+app.put('/api/persons/:id', (req, res)=>{
+  const id = req.params.id
+  const person = {
+    name: req.body.name,
+    number: req.body.number,
+  }
+  Person.findByIdAndUpdate(id, person)
+    .then(updatedPerson=>{
+      res.json(updatedPerson)
+    })
+    .catch(error=> {
+      console.log(error);
+      next(error)})
+})
+// HTTP DELETE method 
+app.delete('/api/persons/:id',(req, res)=>{
+  Person.findByIdAndDelete(req.params.id)
+    .then(result=> res.status(204).end() )
     .catch(error=> next(error))
 })
 
 const unknownEndpoint = (request, response, next) => {
-  response.status(404).send(`<h2>Hello😎</h2> <p>You are lost here, there is no such kindd of thing here dude 😁😁😁</p>`)
+  response.status(404).send(`<h2>Hello😎</h2> <p>You are lost here, there is no such kindd of thing here dude 😁😁😁</p> <a href="/" >Home<a>`)
   next()
   console.log("The unknown end point");
 }

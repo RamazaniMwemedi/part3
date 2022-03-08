@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const url = process.env.MONGODB_URI_NOTE
+const url = process.env.MONGODB_URI_PERSON
 
 console.log('connecting to', url)
 
@@ -12,18 +12,19 @@ mongoose.connect(url)
     console.log('error connecting to MongoDB:', error.message)
   })
 
-const noteSchema = new mongoose.Schema({
-  content: String,
-  date: Date,
-  important: Boolean,
-})
+  const personSchema = new mongoose.Schema({
+      name: String,
+      number: Number,
+      important: Boolean,
+      date : Date
+  })
 
-noteSchema.set('toJSON', {
-  transform: (document, returnedObject) => {
+personSchema.set('toJSON',{
+    transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.__v
   }
 })
 
-module.exports = mongoose.model('Note', noteSchema)
+module.exports = mongoose.model("Person", personSchema)
