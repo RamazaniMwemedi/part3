@@ -61,15 +61,17 @@ app.get('/api/notes/:id', (req, res)=>{
     })
 })
 // Get info on how many notes are in the Note collection
-app.get('/api/notes/info', (req, res)=>{
-  // Note.find({}).then( note=>{
-  //  res.send(`<h1>Phone book has info for ${note.length} people</h1> <i>${new Date()}</i>`)
-  // })
-  console.log("Info point asked");
-})
+// app.get('/api/notes/info', (req, res, next)=>{
+//   Note.find({})
+//     .then( note=>{
+//       res.send(`<h1>Phone book has info for ${note.length} people</h1> <i>${new Date()}</i>`)
+//     })
+//     .catch(error=> next(error))
+//   console.log("Info point asked");
+// })
 
 // HTTP POST Request
-app.post('/api/notes/', (req, res)=>{
+app.post('/api/notes/', (req, res, next)=>{
   const body = req.body;
   if (body.content === undefined ) {
     return res.status(400).json({Error: "Body is undefined"})
@@ -81,10 +83,11 @@ app.post('/api/notes/', (req, res)=>{
       date: new Date()
     })
 
-    note.save().then(result=>{
-      res.json(result)
-      
-    })
+    note.save()
+      .then(result=>{
+        res.json(result)
+      })
+      .catch(error=> next(error))
   }
 })
   // HTTP PUT Request
@@ -96,7 +99,7 @@ app.put('/api/notes/:id',(req, res, next)=>{
       content: body.content,
       important: body.important
     }
-    Note.findByIdAndUpdate(id,note)
+    Note.findByIdAndUpdate(id,note,{new:true, runValidators: true, context: 'query'})
       .then(updatedNote=>{
         res.json(updatedNote)
       })
@@ -186,6 +189,8 @@ const errorHandler = (error, req, res, next) => {
   console.error(error.message)
   if(error.name === 'CastError'){
     return res.status(404).send({error: "Malformated id"})
+  } else if(error.name === 'ValidationError'){
+    return res.status(400).json({error: error.message})
   }
   next(error)
 }
