@@ -61,14 +61,7 @@ app.get('/api/notes/:id', (req, res)=>{
     })
 })
 // Get info on how many notes are in the Note collection
-// app.get('/api/notes/info', (req, res, next)=>{
-//   Note.find({})
-//     .then( note=>{
-//       res.send(`<h1>Phone book has info for ${note.length} people</h1> <i>${new Date()}</i>`)
-//     })
-//     .catch(error=> next(error))
-//   console.log("Info point asked");
-// })
+
 
 // HTTP POST Request
 app.post('/api/notes/', (req, res, next)=>{
