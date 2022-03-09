@@ -140,7 +140,8 @@ app.get('/api/persons/:id', (req, res)=>{
 
 // HTTP POST Method
 app.post('/api/persons',(req, res, next)=>{
-  const {name, number, important} = req.body
+  const {name, important} = req.body
+  const number = Number(req.body.number)
   const person = new Person({
     name,
     number,
@@ -154,7 +155,7 @@ app.post('/api/persons',(req, res, next)=>{
     })
     .catch(error => {
       next(error)
-      console.log(error._message);
+      console.log(req.body.number);
     })
 
 })

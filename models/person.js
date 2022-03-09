@@ -20,7 +20,17 @@ mongoose.connect(url)
       },
       number: {
         type: Number,
-        minLength:10,
+        // min:8,
+        // max:10,
+        // validate:{
+        //   validator: value=()=>{
+        //      return /\d{3}-\d{3}-\d{4}/.test(value);
+        //   },
+        //  message: props => {
+        //    `${props.value} is not a valid phone number!`
+        //    console.log(props.value);
+        //  }
+        // },
         required: true
       },
       important: Boolean,
